@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafolio Web V3</title>
+
+  <!-- Google Fonts: Rajdhani & Share Tech Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            mono: ['"Share Tech Mono"', 'monospace'],
+          },
+          colors: {
+            canvas: '#0B0E14',
+            panel: '#101726',
+            panelLight: '#162033',
+            cyanGlow: '#00F0FF',
+            goldExotic: '#FFB800',
+            greenOnline: '#00FF88',
+            magentaVoid: '#FF0055',
+            mutedSlate: '#64748B',
+          },
+          boxShadow: {
+            'cyan-glow': '0 0 20px rgba(0, 240, 255, 0.35)',
+            'cyan-glow-lg': '0 0 35px rgba(0, 240, 255, 0.5)',
+            'gold-glow': '0 0 20px rgba(255, 184, 0, 0.35)',
+            'green-glow': '0 0 15px rgba(0, 255, 136, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom HUD & Sci-Fi Styles -->
+  <style>
+    /* Base Body & Grid Background */
+    body {
+      background-color: #0B0E14;
+      background-image:
+        linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      font-family: 'Rajdhani', sans-serif;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+
+    /* Subtle Vignette Overlay */
+    .vignette-overlay {
+      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(11, 14, 20, 0.95) 100%);
+      pointer-events: none;
+    }
+
+    /* Chamfer / Clipped Polygon Utilities */
+    .clip-chamfer {
+      clip-path: polygon(
+        12px 0, 100% 0, 
+        100% calc(100% - 12px), calc(100% - 12px) 100%, 
+        0 100%, 0 12px
+      );
+    }
+
+    .clip-chamfer-lg {
+      clip-path: polygon(
+        18px 0, 100% 0, 
+        100% calc(100% - 18px), calc(100% - 18px) 100%, 
+        0 100%, 0 18px
+      );
+    }
+
+    .clip-tag {
+      clip-path: polygon(
+        0 0, calc(100% - 14px) 0, 
+        100% 14px, 100% 100%, 
+        14px 100%, 0 calc(100% - 14px)
+      );
+    }
+
+    .clip-diamond {
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+
+    /* Sci-Fi Decorative Corner Brackets */
+    .hud-brackets {
+      position: relative;
+    }
+    .hud-brackets::before,
+    .hud-brackets::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .hud-brackets::before {
+      top: -1px;
+      left: -1px;
+      border-top: 2px solid #00F0FF;
+      border-left: 2px solid #00F0FF;
+    }
+    .hud-brackets::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 2px solid #00F0FF;
+      border-right: 2px solid #00F0FF;
+    }
+    .hud-brackets:hover::before,
+    .hud-brackets:hover::after {
+      width: 16px;
+      height: 16px;
+      border-color: #FFB800;
+    }
+
+    /* CRT Scanline effect (subtle) */
+    .scanlines {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 0, 0, 0.25) 50%,
+        rgba(0, 0, 0, 0.25)
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0E14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F0FF;
+    }
+
+    /* Glowing Pulse Animation */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.4); opacity: 0.1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .animate-pulse-ring {
+      animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Glitch Text Hover Effect */
+    .glitch-hover:hover {
+      text-shadow: 2px 0 #FF0055, -2px 0 #00F0FF;
+    }
+
+    /* Holographic Scanner & Cursor Follow Glow for Project Cards */
+    .mission-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-card .holo-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      background: radial-gradient(420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 240, 255, 0.18), transparent 60%);
+      mix-blend-mode: screen;
+      z-index: 20;
+    }
+    .mission-card:hover .holo-glow {
+      opacity: 1;
+    }
+    .mission-card .holo-scanner-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), #00F0FF, #FFFFFF, #00F0FF, rgba(0, 240, 255, 0.2), transparent);
+      box-shadow: 0 0 10px #00F0FF, 0 0 20px #00F0FF;
+      top: var(--mouse-y, 50%);
+      z-index: 25;
+    }
+    .mission-card:hover .holo-scanner-line {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+
+<body class="relative min-h-screen text-slate-100 selection:bg-cyanGlow selection:text-black antialiased">
+
+  <!-- Background Canvas Container -->
+  <div id="bg-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></div>
+
+  <!-- Ambient Vignette & Scanline Layers -->
+  <div class="fixed inset-0 vignette-overlay z-0"></div>
+  <div class="fixed inset-0 scanlines opacity-40 z-0"></div>
+
+  <!-- Audio Synthesizer Engine (Vanilla Web Audio API) -->
+  <script>
+    // Tactical SFX Generator
+    const AudioEngine = {
+      ctx: null,
+      enabled: true,
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      },
+      play(type = 'hover') {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx || this.ctx.state === 'suspended') {
+          this.ctx?.resume();
+        }
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        const t = this.ctx.currentTime;
+
+        if (type === 'hover') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, t);
+          osc.frequency.exponentialRampToValueAtTime(1400, t + 0.04);
+          gain.gain.setValueAtTime(0.03, t);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+          osc.start(t);
+          osc.stop(t + 0.04);
+        } else if (type === 'click') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(450, t);
+          osc.frequency.exponentialRampToValueAtTime(120, t + 0.08);
+          gain.gain.setValueAtTime(0.08, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+          osc.start(t);
+          osc.stop(t + 0.08);
+        } else if (type === 'deploy') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, t);
+          osc.frequency.exponentialRampToValueAtTime(880, t + 0.18);
+          gain.gain.setValueAtTime(0.09, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+          osc.start(t);
+          osc.stop(t + 0.2);
+        }
+      },
+      toggle() {
+        this.enabled = !this.enabled;
+        const toggleBtn = document.getElementById('audio-toggle-status');
+        if (toggleBtn) {
+          toggleBtn.innerText = this.enabled ? 'AUDIO: ON' : 'AUDIO: MUTED';
+          toggleBtn.className = this.enabled ? 'text-cyanGlow' : 'text-slate-500';
+        }
+        if (this.enabled) this.play('click');
+      }
+    };
+  </script>
+
+  <!-- ======================================================== -->
+  <!-- 1. TOP HUD NAVBAR                                       -->
+  <!-- ======================================================== -->
+  <header class="fixed top-0 left-0 w-full z-50 border-b border-cyanGlow/20 bg-canvas/85 backdrop-blur-md">
+    <!-- Top Micro Telemetry Strip -->
+    <div class="hidden md:flex justify-between items-center px-6 py-1 bg-black/40 border-b border-slate-800/80 font-mono text-[10px] tracking-wider text-slate-400">
+      <div class="flex items-center gap-4">
+        <span>SYS.KERNEL: <span class="text-slate-200">v4.19.0</span></span>
+        <span>LATENCIA: <span class="text-greenOnline">14 MS</span></span>
+        <span>ZONA: <span class="text-slate-200">SECTOR-09 [SEGURO]</span></span>
+      </div>
+      <div class="flex items-center gap-5">
+        <span id="live-utc-clock">UTC 00:00:00</span>
+        <button onclick="AudioEngine.toggle()" class="hover:text-cyanGlow transition-colors flex items-center gap-1 cursor-pointer">
+          <i data-lucide="volume-2" class="w-3 h-3"></i>
+          <span id="audio-toggle-status" class="text-cyanGlow font-bold">AUDIO: ON</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Player Logo & Callout -->
+        <a href="#hero" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="flex items-center gap-3 group">
+          <!-- Crest / Tactical Icon -->
+          <div class="relative w-10 h-10 flex items-center justify-center bg-panel border border-cyanGlow/40 clip-chamfer group-hover:border-cyanGlow group-hover:shadow-cyan-glow transition-all duration-300">
+            <span class="absolute inset-0 bg-cyanGlow/10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+            <!-- Ghost / Emblem Vector -->
+            <svg class="w-5 h-5 text-cyanGlow group-hover:rotate-45 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+              <path d="M2 17L12 22L22 17" />
+              <path d="M2 12L12 17L22 12" />
+            </svg>
+          </div>
+
+          <!-- Tag & Name -->
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-lg sm:text-xl tracking-wider text-white group-hover:text-cyanGlow transition-colors">
+                A<span class="text-cyanGlow">VR</span>
+              </span>
+              <span class="text-[9px] px-1.5 py-0.5 bg-cyanGlow/10 border border-cyanGlow/30 text-cyanGlow font-mono rounded-none">
+                PWR 256
+              </span>
+            </div>
+            <span class="text-[10px] tracking-widest text-slate-400 font-mono"> CLASE: PERSONA</span>
+          </div>
+        </a>
+
+        <!-- Status Indicator: "ONLINE" -->
+        <div class="flex items-center gap-3 px-3 py-1.5 bg-black/60 border border-slate-800 clip-tag">
+          <div class="relative flex items-center justify-center w-3 h-3">
+            <span class="absolute w-3 h-3 rounded-full bg-greenOnline animate-pulse-ring"></span>
+            <span class="relative w-2 h-2 rounded-full bg-greenOnline shadow-green-glow"></span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[11px] font-bold tracking-widest text-greenOnline font-mono leading-none">
+              ACTIVO
+            </span>
+            <span class="text-[8px] text-slate-400 font-mono tracking-tighter hidden sm:inline">
+              VINCULACION DE RED ACTIVA
+            </span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Menu -->
+        <nav class="hidden lg:flex items-center gap-1 font-semibold text-xs tracking-widest font-mono">
+          <a href="#hero" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="px-3 py-2 text-slate-300 hover:text-cyanGlow hover:bg-cyanGlow/5 border-b-2 border-transparent hover:border-cyanGlow transition-all">
+            SOBRE MÍ
+          </a>
+          <a href="#loadout" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="px-3 py-2 text-slate-300 hover:text-cyanGlow hover:bg-cyanGlow/5 border-b-2 border-transparent hover:border-cyanGlow transition-all">
+            HERRAMIENTAS Y TECNOLOGÍAS
+          </a>
+          <a href="#projects" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="px-3 py-2 text-slate-300 hover:text-cyanGlow hover:bg-cyanGlow/5 border-b-2 border-transparent hover:border-cyanGlow transition-all">
+            PROYECTOS
+          </a>
+          <a href="#certifications" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="px-3 py-2 text-slate-300 hover:text-cyanGlow hover:bg-cyanGlow/5 border-b-2 border-transparent hover:border-cyanGlow transition-all">
+            CURSOS
+          </a>
+          <!-- 
+          <a href="#comms" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="px-3 py-2 text-slate-300 hover:text-goldExotic hover:bg-goldExotic/5 border-b-2 border-transparent hover:border-goldExotic transition-all">
+            CONTACTO
+          </a>
+          -->
+        </nav>
+
+        <!-- Right Quick Actions -->
+        <div class="hidden sm:flex items-center gap-3">
+          <a href="https://www.linkedin.com/in/alberto-valenzuela-rivera-2a4b86225/" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('deploy')" class="px-4 py-2 bg-cyanGlow text-black font-bold text-xs uppercase tracking-widest clip-tag hover:bg-cyan-300 hover:shadow-cyan-glow transition-all flex items-center gap-2">
+            <i data-lucide="radio" class="w-3.5 h-3.5"></i>
+            <span>VER LINKEDIN</span>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Hamburger Button -->
+        <div class="flex lg:hidden">
+          <button id="mobile-menu-toggle" onclick="toggleMobileMenu(); AudioEngine.play('click')" aria-label="Abrir Menú" class="p-2 border border-slate-700 bg-panel text-cyanGlow hover:border-cyanGlow">
+            <i data-lucide="menu" id="menu-icon-open" class="w-6 h-6"></i>
+            <i data-lucide="x" id="menu-icon-close" class="w-6 h-6 hidden"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer HUD -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-cyanGlow/20 bg-canvas/98 px-6 py-6 font-mono text-sm space-y-3">
+      <div class="text-[10px] text-slate-500 uppercase tracking-widest pb-1 border-b border-slate-800">
+        Navigation Index // HUD
+      </div>
+      <a href="#hero" onclick="closeMobileMenu(); AudioEngine.play('click')" class="block py-2 text-slate-200 hover:text-cyanGlow hover:translate-x-2 transition-all">
+        ◈ 01_OVERVIEW
+      </a>
+      <a href="#loadout" onclick="closeMobileMenu(); AudioEngine.play('click')" class="block py-2 text-slate-200 hover:text-cyanGlow hover:translate-x-2 transition-all">
+        ◈ 02_LOADOUT / SKILLS
+      </a>
+      <a href="#projects" onclick="closeMobileMenu(); AudioEngine.play('click')" class="block py-2 text-slate-200 hover:text-cyanGlow hover:translate-x-2 transition-all">
+        ◈ 03_MISSION SELECT / PROJECTS
+      </a>
+      <a href="#attributes" onclick="closeMobileMenu(); AudioEngine.play('click')" class="block py-2 text-slate-200 hover:text-cyanGlow hover:translate-x-2 transition-all">
+        ◈ 04_PLAYER ATTRIBUTES
+      </a>
+      <a href="#comms" onclick="closeMobileMenu(); AudioEngine.play('click')" class="block py-2 text-goldExotic hover:text-white hover:translate-x-2 transition-all">
+        ◈ 05_COMMS TERMINAL
+      </a>
+      <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+        <span>STATUS: <span class="text-greenOnline">ONLINE</span></span>
+        <span>SECURITY: LEVEL-A</span>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ======================================================== -->
+  <!-- 2. HERO SECTION (INICIO)                                -->
+  <!-- ======================================================== -->
+  <section id="hero" class="relative pt-28 sm:pt-36 lg:pt-44 pb-20 sm:pb-32 overflow-hidden z-10">
+    
+    <!-- Tactical Reticles / Crosshairs in Hero Margins -->
+    <div class="absolute top-28 left-6 text-cyanGlow/20 font-mono text-xs hidden lg:block select-none">
+      + [ERROR: CAPA 8]<br>
+      + [REINICIO: INICIANDO...]
+    </div>
+    <div class="absolute top-28 right-6 text-cyanGlow/20 font-mono text-xs text-right hidden lg:block select-none">
+      [IT'S NOT A BUG, IT'S A FEATURE ] +<br>
+      [IT'S WORK ON MY MACHINE] +
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Hero Content Column (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Tactical Breadcrumb / Callout -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-cyanGlow/10 border-l-4 border-cyanGlow text-cyanGlow font-mono text-xs uppercase tracking-widest">
+            <span class="inline-block w-2 h-2 bg-cyanGlow clip-diamond"></span>
+            <span>ACCESO AUTORIZADO: NIVEL 5</span>
+          </div>              
+
+          <!-- Hero Main Title -->
+          <div class="space-y-2">
+            <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-none glitch-hover transition-all">
+              ALBERTO<br> 
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyanGlow via-teal-200 to-white drop-shadow-[0_0_25px_rgba(0,240,255,0.4)]">
+                VALENZUELA R    
+              </span>
+            </h1>
+
+            <!-- Requested Subtitle with Typing Animation Target -->
+            <div class="flex items-center gap-3 pt-2">
+              <span class="h-px w-8 bg-goldExotic"></span>
+              <p class="text-base sm:text-xl lg:text-2xl font-bold tracking-[0.25em] text-goldExotic uppercase font-mono flex items-center min-h-[32px]">
+                <span id="hero-typing-subtitle">DESARROLLADOR .NET / SOFTWARE ARCHITECT</span><span id="typing-cursor" class="text-cyanGlow animate-pulse ml-1 font-black">_</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Tactical Narrative / Profile Description -->
+          <p class="text-slate-300 text-base sm:text-lg max-w-2xl font-normal leading-relaxed border-l-2 border-slate-700/80 pl-4 py-1">
+          ING. en Sistemas computacionales otorgado por el ITSG (Instituto Tecnológico Superior de Guasave con la especialidad de Desarrollo de tecnologías inteligentes para análisis de datos y de automatización de procesos agroindustriales mediante metodologías IoT ) , desarrollador de software enfocado en el entorno .NET
+          </p>
+
+          <!-- Telemetry Badges Matrix -->
+          <div class="grid grid-cols-3 gap-3 pt-2 max-w-lg font-mono text-xs">
+            <div class="p-3 bg-panel border border-slate-800 clip-chamfer">
+              <div class="text-slate-500 text-[10px]">LENDGUAJE DE PROGRAMACIÓN</div>
+              <div class="text-cyanGlow font-bold text-base">C#</div>
+            </div>
+            <div class="p-3 bg-panel border border-slate-800 clip-chamfer">
+              <div class="text-slate-500 text-[10px]">BASE DE DATOS </div>
+              <div class="text-greenOnline font-bold text-base">SQL</div>
+            </div>
+            <div class="p-3 bg-panel border border-slate-800 clip-chamfer">
+              <div class="text-slate-500 text-[10px]">PRINCIPAL</div>
+              <div class="text-goldExotic font-bold text-base">.NET</div>
+            </div>
+          </div>
+
+          <!-- CTA Buttons: Military / Sci-Fi Tactical Dogtag Card Button -->
+          <div class="pt-4 flex flex-col sm:flex-row gap-4 sm:items-center">
+            
+            <!-- Requested Military Card / Sci-Fi CTA Button -->
+            <a href="#missions" 
+               onmouseenter="AudioEngine.play('hover')" 
+               onclick="AudioEngine.play('deploy')" 
+               class="group relative inline-flex items-center justify-between px-6 py-4 bg-gradient-to-r from-panel to-panelLight border-2 border-cyanGlow/60 hover:border-cyanGlow text-white clip-chamfer shadow-cyan-glow hover:shadow-cyan-glow-lg transition-all duration-300 cursor-pointer overflow-hidden">
+              
+              <!-- Subtle Barcode / Tech texture in background -->
+              <div class="absolute right-2 bottom-1 opacity-20 group-hover:opacity-40 transition-opacity font-mono text-[9px] tracking-tighter text-cyanGlow select-none">
+                ||| | |||| | || | ||| SN-89240-X
+              </div>
+
+              <!-- Button Content -->
+              <div class="flex items-center gap-4 z-10">
+                <!-- Tactical Emblem Icon -->
+                <div class="w-10 h-10 bg-cyanGlow/20 border border-cyanGlow/50 clip-diamond flex items-center justify-center text-cyanGlow group-hover:bg-cyanGlow group-hover:text-black transition-colors">
+                  <i data-lucide="crosshair" class="w-5 h-5"></i>
+                </div>
+                <div class="text-left">
+                  <div class="text-[9px] font-mono tracking-widest text-cyanGlow">EJECUTAR COMANDO</div>
+                  <div class="text-base sm:text-lg font-bold tracking-wider uppercase">VER PROYECTOS</div>
+                </div>
+              </div>
+
+              <!-- Animated Arrow / Chevron -->
+              <div class="pl-6 z-10">
+                <i data-lucide="chevron-right" class="w-6 h-6 text-cyanGlow group-hover:translate-x-1 transition-transform"></i>
+              </div>
+
+              <!-- Glowing Corner Accent -->
+              <div class="absolute top-0 right-0 w-3 h-3 bg-cyanGlow"></div>
+            </a>
+
+            <!-- CV -->
+            <a href="Alberto_Valenzuela_CV2026.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onmouseenter="AudioEngine.play('hover')" 
+              onclick="AudioEngine.play('click')" 
+              class="inline-flex items-center justify-center gap-2 px-6 py-4 bg-black/50 border border-slate-700 hover:border-goldExotic text-slate-300 hover:text-goldExotic font-mono text-sm tracking-widest uppercase clip-chamfer transition-all">
+              <i data-lucide="terminal" class="w-4 h-4"></i>
+              <span>VER CV</span>
+            </a>
+
+          </div>
+
+        </div>
+
+        <!-- Right Hero Interactive HUD Card / Destiny 2 Style Character Box (5 cols) -->
+        <div class="lg:col-span-5 relative">
+          
+          <!-- Outer Decorative Reticle Frame -->
+          <div class="relative bg-panel/90 border border-cyanGlow/30 p-6 sm:p-8 clip-chamfer-lg hud-brackets backdrop-blur-xl shadow-2xl">
+            
+            <!-- Top HUD Bar of Card -->
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-800 text-xs font-mono">
+              <div class="flex items-center gap-2 text-cyanGlow">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span class="tracking-widest font-bold">INFORMACIÓN</span>
+              </div>
+              <span class="text-slate-500">ID: #009-P1</span>
+            </div>
+
+            <!-- Operative Avatar / Holographic Portrait -->
+            <div class="relative w-full aspect-square max-w-[280px] mx-auto mb-6 bg-gradient-to-b from-slate-900 via-panelLight to-black border border-cyanGlow/40 clip-chamfer flex items-center justify-center overflow-hidden group">
+              <!-- Holographic Grid Effect -->
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,255,0.15),transparent_70%)]"></div>
+              
+              <!-- Character Silhouette / Cyberpunk Tech Rig -->
+              <div class="relative z-10 text-center space-y-3">
+                <div class="w-24 h-24 mx-auto rounded-full bg-slate-950/80 border-2 border-cyanGlow/60 flex items-center justify-center shadow-cyan-glow group-hover:scale-105 transition-transform duration-500">
+                  <i data-lucide="cpu" class="w-12 h-12 text-cyanGlow animate-pulse"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-bold tracking-widest text-white uppercase">NÚCLEO</div>
+                  <div class="text-[10px] font-mono text-greenOnline">SINCRONIZADO: ESTABLE</div>
+                </div>
+              </div>
+
+              <!-- Reticle Corner Accents -->
+              <div class="absolute top-2 left-2 text-cyanGlow text-[8px] font-mono">[HUD-01]</div>
+              <div class="absolute bottom-2 right-2 text-cyanGlow text-[8px] font-mono">[SYS-OK]</div>
+              <div class="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyanGlow to-transparent"></div>
+            </div>
+
+            <!-- Quick Slots / Destiny Gear Highlights -->
+            <div class="space-y-3 font-mono text-xs">
+              <div class="flex items-center justify-between p-2.5 bg-black/60 border border-slate-800 hover:border-cyanGlow/50 transition-colors">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2 h-2 bg-cyanGlow rounded-none"></span>
+                  <span class="text-slate-300">LENGUAJES DE PROGRAMACIÓN</span>
+                </div>
+                <span class="text-cyanGlow font-bold">C#, C</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 bg-black/60 border border-slate-800 hover:border-goldExotic/50 transition-colors">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2 h-2 bg-goldExotic rounded-none"></span>
+                  <span class="text-slate-300">Bases de datos</span>
+                </div>
+                <span class="text-goldExotic font-bold">Microsoft SQL</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 bg-black/60 border border-slate-800 hover:border-magentaVoid/50 transition-colors">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2 h-2 bg-magentaVoid rounded-none"></span>
+                  <span class="text-slate-300">Agentes IA</span>
+                </div>
+                <span class="text-magentaVoid font-bold">Antigravity (Gemini)</span>
+              </div>
+            </div>
+
+            <!-- Card Bottom Barcode -->
+            <div class="mt-5 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-500">
+              <span>K.I.S.S.</span>
+              <span class="text-slate-400">ESTADO: LISTO</span>
+            </div>
+
+          </div>
+          
+          <!-- Outer Floating Tag -->
+          <div class="absolute -bottom-4 -left-4 hidden sm:flex items-center gap-2 px-4 py-2 bg-black border border-goldExotic text-goldExotic font-mono text-xs shadow-gold-glow clip-tag">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>S.P.E.C.I.A.L. 2</span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 3. SECTION: LOADOUT / SKILLS (EQUIPMENT INVENTORY)      -->
+  <!-- ======================================================== -->
+  <section id="loadout" class="py-24 border-t border-slate-800/80 relative z-10 bg-canvas/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 border-b border-slate-800 pb-6 gap-6">
+        <div>
+          <div class="text-xs font-mono text-cyanGlow uppercase tracking-widest flex items-center gap-2">
+            <span>CONJUNTO DE TECONLOGÍAS </span>
+            <span class="h-px w-10 bg-cyanGlow/40"></span>
+            <span class="text-slate-500 text-[10px]">ESPACIO DEL SISTEMA: COMPLETO</span>
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white mt-1">
+            HABILIDADES TECNOLÓGICAS <span class="text-slate-500 text-xl font-normal font-mono">[INVENTARIO]</span>
+          </h2>
+        </div>
+
+        <!-- Inventory Category Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <button onclick="filterLoadout('all')" data-category="all" class="loadout-filter-btn px-4 py-2 bg-cyanGlow text-black border border-cyanGlow font-bold uppercase tracking-wider clip-tag shadow-cyan-glow transition-all cursor-pointer">
+            [ TODO ]
+          </button>
+          <button onclick="filterLoadout('frontend')" data-category="frontend" class="loadout-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-cyanGlow font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+            [ FRONTEND ]
+          </button>
+          <button onclick="filterLoadout('backend')" data-category="backend" class="loadout-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-goldExotic font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+            [ BACKEND ]
+          </button>
+          <button onclick="filterLoadout('tools')" data-category="tools" class="loadout-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-magentaVoid font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+            [ HERRAMIENTAS ]
+          </button>
+        </div>
+      </div>
+
+      <!-- Equipment Inventory Grid (Bevelled Cards + Glowing #00F0FF Level Bars + Category Tags) -->
+      <div id="loadout-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- C# -->
+        <div data-category="backend" class="loadout-item bg-panel border border-goldExotic/30 hover:border-goldExotic p-6 clip-chamfer hud-brackets flex flex-col justify-between group transition-all duration-300">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="px-2.5 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-goldExotic/10 text-goldExotic border border-goldExotic/40 clip-tag font-bold">
+                Backend
+              </span>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-goldExotic/10 border border-goldExotic/50 clip-chamfer flex items-center justify-center text-goldExotic group-hover:bg-goldExotic group-hover:text-black transition-colors shrink-0">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white uppercase tracking-wider group-hover:text-goldExotic transition-colors">
+                  C#
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FRONTEND  -->
+        <div data-category="frontend" class="loadout-item bg-panel border border-cyanGlow/30 hover:border-cyanGlow p-6 clip-chamfer hud-brackets flex flex-col justify-between group transition-all duration-300">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="px-2.5 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/40 clip-tag font-bold">
+                Frontend
+              </span>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-cyanGlow/10 border border-cyanGlow/50 clip-chamfer flex items-center justify-center text-cyanGlow group-hover:bg-cyanGlow group-hover:text-black transition-colors shrink-0">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white uppercase tracking-wider group-hover:text-cyanGlow transition-colors">
+                  HTML
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERRAMIENTA GIT -->
+        <div data-category="tools" class="loadout-item bg-panel border border-magentaVoid/30 hover:border-magentaVoid p-6 clip-chamfer hud-brackets flex flex-col justify-between group transition-all duration-300">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="px-2.5 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-magentaVoid/10 text-magentaVoid border border-magentaVoid/40 clip-tag font-bold">
+                HERRAMIENTAS
+              </span>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-magentaVoid/10 border border-magentaVoid/50 clip-chamfer flex items-center justify-center text-magentaVoid group-hover:bg-magentaVoid group-hover:text-black transition-colors shrink-0">
+                <i data-lucide="cloud" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white uppercase tracking-wider group-hover:text-magentaVoid transition-colors">
+                  GIT
+                </h3>
+              </div>
+            </div>
+          </div>          
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 4. SECTION: MISSION SELECT / PROJECTS                    -->
+  <!-- ======================================================== -->
+  
+  <section id="projects" class="py-24 border-t border-slate-800/80 relative z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Section Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-12 border-b border-slate-800 pb-6 gap-6">
+      <div>
+        <div class="text-xs font-mono text-greenOnline uppercase tracking-widest flex items-center gap-2">
+          <span>SELECTOR DE PROYECTOS</span>
+          <span class="h-px w-10 bg-greenOnline/40"></span>
+          <span class="text-slate-500 text-[10px]">SECTOR GRID 07</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white mt-1">
+          PROYECTOS <span class="text-slate-500 text-xl font-normal font-mono">[DIRECTOR]</span>
+        </h2>
+      </div>
+
+      <!-- Mission Category Filter Tabs -->
+      <div class="flex flex-wrap items-center gap-2 font-mono text-xs" id="mission-filter-container">
+        <button onclick="filterMissions('all')" data-filter="all" class="mission-filter-btn px-4 py-2 bg-cyanGlow text-black border border-cyanGlow font-bold uppercase tracking-wider clip-tag shadow-cyan-glow transition-all cursor-pointer">
+          [ TODAS ]
+        </button>
+        <button onclick="filterMissions('escritorio')" data-filter="escritorio" class="mission-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-cyanGlow font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+          [ ESCRITORIO ]
+        </button>
+        <button onclick="filterMissions('web')" data-filter="web" class="mission-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-cyanGlow font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+          [ WEB ]
+        </button>
+        <button onclick="filterMissions('mobile')" data-filter="mobile" class="mission-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-magentaVoid font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+          [ MOBILE ]
+        </button>
+        <button onclick="filterMissions('ai')" data-filter="ai" class="mission-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-goldExotic font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer">
+          [ AI / CLOUD ]
+        </button>
+      </div>
+    </div>
+
+    <!-- Mission Select Grid -->
+    <div id="missions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <!-- Proyecto 1 (web) -->
+      <div data-category="web" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 8
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Portafolio Web V3
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                SPA (Single Page Application)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Portafolio WEB que muestra proyectos, tecnologías y experiencia.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">HTML</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">JS</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">Tailwind CSS</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">Antigravity (Gemini 3.8)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://tu-enlace-o-pagina.com" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 7 -->
+      <div data-category="web" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+            <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/portafoliowebv2.png?raw=true"/>
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 7
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Portafolio Web V2
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                SPA (Single Page Application)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Portafolio WEB hecha en Blazor que muestra proyectos, tecnologías y experiencia.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BLAZOR</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">HTML</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BOOSTRAP</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">Gemini 3 (Web)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/portafolioV2" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 6 -->
+      <div data-category="web" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+            <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/portafolio.webp?raw=true"/>
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 6
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Portafolio Web
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                SPA (Single Page Application)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Portafolio WEB hecha en Blazor que muestra proyectos, tecnologías y experiencia.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BLAZOR</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">HTML</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BOOSTRAP</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">Gemini 3 (Web)</span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/portafolioweb" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 5 -->
+      <div data-category="escritorio" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+            <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/baseball.webp?raw=true"/>
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 5
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Sitio Web de Beisbol
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                SPA (Single Page Aplication)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Sitio web donde se muestra información de jugadores, juegos jugados y resultados.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BLAZOR</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">HTML</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">BOOSTRAP</span>
+                <span class="px-2.5 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">Gemini 3 (Web)</span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/baseballweb" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 4 -->
+      <div data-category="escritorio" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+            <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/transacciones.webp?raw=true"/>
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 4
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Sistema de inventario
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                Aplicación de escritorio (Windows Forms)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Sistema de inventario.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">C#</span>       
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">SQL</span>       
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/Transacciones" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 3 -->
+      <div data-category="escritorio" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all"> 
+          <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/tbdd.webp?raw=true"/>
+
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 3
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Taller de base de datos.
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                Aplicación de escritorio (Windows Forms)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Sistema que permite crear roles, usuarios, crear tablas y ejecutar consultas.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">C#</span>       
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">SQL</span>       
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/TBDD" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Proyecto 2 -->
+      <div data-category="escritorio" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">
+          <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/msgbd.webp?raw=true"/>
+
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 2
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                MSGBDD
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                Aplicación de escritorio (Windows Forms)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Mini sistema gestor de base de datos, el cuál realiza operaciones básicas de un gestor.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">C#</span>       
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">SQL</span>       
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/MiniSGBD?tab=readme-ov-file" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+
+       <!-- Proyecto 1 -->
+      <div data-category="escritorio" class="mission-card bg-panel/95 border border-cyanGlow/40 hover:border-cyanGlow clip-chamfer-lg hud-brackets flex flex-col justify-between group transition-all duration-300 shadow-xl overflow-hidden">
+        <div class="holo-glow"></div>
+        <div class="holo-scanner-line"></div>
+        
+        <div>
+          <div class="relative w-full h-48 bg-slate-950 border-b border-cyanGlow/30 overflow-hidden flex items-center justify-center group-hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.2)] transition-all">                                            <img src="https://github.com/AlbertoV01/portafolioV2/blob/main/wwwroot/images/metodosnumericos.webp?raw=true"/>
+            <div class="absolute top-3 right-3 flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-black/80 border border-cyanGlow text-cyanGlow font-mono text-[10px]">
+                PROYECTO: 1
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <h3 class="text-xl font-black text-white uppercase tracking-tight group-hover:text-cyanGlow transition-colors">
+                Métodos numéricos
+              </h3>
+              <div class="text-xs font-mono text-cyanGlow mt-0.5">
+                Aplicación de escritorio (Windows Forms)
+              </div>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            Aplicación que resuelve sistemas de ecuaciones por diferentes métodos.
+            </p>
+            <div class="space-y-2 pt-2">
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                TECNOLOGÍAS USADAS:
+              </div>
+              <div class="flex flex-wrap gap-2 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-black/60 border border-cyanGlow/40 text-cyanGlow clip-tag">C#</span>       
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <a href="https://github.com/AlbertoV01/Metodos-Numericos-401" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             onmouseenter="AudioEngine.play('hover')"
+             onclick="AudioEngine.play('click')"
+             class="w-full py-2.5 bg-gradient-to-r from-cyanGlow to-teal-400 text-black font-black text-xs uppercase tracking-widest clip-tag hover:shadow-cyan-glow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+            <span>VER REPOSITORIO</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- ======================================================== -->
+<!-- 5. CERTIFICACIONES Y CURSOS FINALIZADOS                   -->
+<!-- ======================================================== -->
+<section id="certifications" class="py-24 border-t border-slate-800/80 relative z-10 bg-canvas/40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    
+    <!-- Encabezado de la Sección -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-4">
+        <div class="text-xs font-mono text-cyanGlow uppercase tracking-widest flex items-center gap-2">
+          <span>CREDENCIALES & LOGROS</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white">
+          CURSO
+        </h2>
+        <p class="text-slate-300 text-sm max-w-2xl leading-relaxed">
+          Registro de certificados de finalización de cursos en diferentes ramas de tecnologías
+        </p>
+      </div>
+
+      <!-- Badge de Estado General -->
+      <div class="p-4 bg-panel border border-cyanGlow/30 clip-chamfer font-mono text-xs space-y-1.5 self-start md:self-auto">
+        <div class="flex justify-between gap-4 text-slate-400">
+          <span>ESTADO GENERAL:</span>
+          <span class="text-greenOnline font-bold">100% COMPLETADO</span>
+        </div>
+        <div class="flex justify-between gap-4 text-slate-400">
+          <span>CURSOS COMPLETADOS:</span>
+          <span class="text-cyanGlow font-bold">5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de Tarjetas de Certificados -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+<!-- Certificado 8: C# -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C#
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Responsive Web Design
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            HTML, CSS Y JAVASCRIPT
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">freeCodeCamp</span>
+          </div>
+          <a href="https://www.freecodecamp.org/certification/albertovalenzuela/responsive-web-design" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      
+<!-- Certificado 8: C# -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C#
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Foundational C# with Microsoft
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Crear una aplicación C#, codificar simples aplicaciones en C#, crear métodos en una aplicación C#, agregar lógica a las aplicaciones C#, trabajar con información variable en aplicaciones C#, debuggin.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">freeCodeCamp</span>
+          </div>
+          <a href="https://www.freecodecamp.org/certification/albertovalenzuela/foundational-c-sharp-with-microsoft" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 7: c y c++ -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C y C++
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Curso de C Y C++ !Desde cero¡
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Variables, tipos de datos, estructuras de control, punteros, memoria dinámica, estructuras de datos y programación orientada a objetos en C++.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-b193910b-ecf1-485d-9173-c26e499dacc0/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 7: c# -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              Base de datos (SQL)
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Máster en SQL Server: Desde cero a profesional [OFICIAL]'26
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Fundamentos de SQL, estructura de sus objetos y la integridad de sus datos, restricciones como primary keys, foreign keys, normalización de tablas, uso de cláusulas SQL, funciones de agregado, operadores lógicos, consultas y subconsultas, estructuras de control, sentencias SQL,
+            funciones de conversión de texto, manejo de transacciones, creación de funciones definidas por usuario, implementación del uso de tablas temporales físicas, en memoria y vistas, administración de base de datos: usuarios, roles, schemas y permisos, integración de datos excel, sql server profile, backups, y restore database.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-d19998b4-e9d5-4104-9091-a050ec360f82/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+      
+      <!-- Certificado 6: c# -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C#
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Introducción a C#
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Operadores y cadenas, toma de dedcisiones, bucles y métodos.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">sololearn</span>
+          </div>
+          <a href="https://api2.sololearn.com/v2/certificates/CC-I37MNRUR/image/png?t=639146474236227430" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 5: javascript -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              JavaScript
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Crea un juego como Flappy Bird desde 0
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Programar con JavaScript un videojugo como FlappyBird.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-6f69db20-bed0-4a95-a4aa-c7f587e2b8c5/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+      
+      <!-- Certificado 4: C# -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C#
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Aprende a programar desde cero en Visual Studio
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Usar Visual Studio, C#, fundamentos de programación y creación de ejectuables .exe.
+
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-45b28221-77cf-4d4c-a8f8-e6ad49cfc229/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 3: Inglés -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              English
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            EF SET English Certificate 
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            EF SET 47/100  (Intermediate)<br>
+            CEFR B1 (Intermediate)<br>
+
+            37 English Reading A2 Elementary<br>
+            56 English Listening  B2 Upper Intermediate<br>
+
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">EF SET</span>
+          </div>
+          <a href="https://cert.efset.org/c2KqVj" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 2: C#-->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-cyanGlow/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-cyan-950/80 border border-cyanGlow/40 text-cyanGlow font-mono text-[10px] uppercase tracking-wider">
+              C#
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyanGlow transition-colors uppercase tracking-wide">
+            Master en C# de cero a (Windows Forms - Xamarin - App Consola)
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Estructuras básicas de control, creación de interfáz gráfica de usuario (GUI), controles básicos de C#, propiedades y eventos de los controles, aplicación de estructuras de control y datos en  los controles C# y realizar operaciones en una aplicación con SQL Server.
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-41fb9792-e368-45fe-87b6-e1ac2bef7b7b/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-cyanGlow/20 border border-cyanGlow/40 text-cyanGlow font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+      <!-- Certificado 1: Fundamentos de BDD -->
+      <div class="group relative bg-panel/80 border border-slate-800 hover:border-goldExotic/50 transition-all duration-300 p-6 clip-chamfer-lg hud-brackets flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-amber-950/80 border border-goldExotic/40 text-goldExotic font-mono text-[10px] uppercase tracking-wider">
+              Base de datos (SQL)
+            </span>
+            <span class="text-xs font-mono text-slate-400 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-greenOnline"></i> Completado
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-goldExotic transition-colors uppercase tracking-wide">
+            Fundamentos de base de datos para principiantes
+          </h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Introducción a bases de datos, gestor de base de datos, gestor de base de datos, diseño de modelo entidad-relación, diagrama de una base de datos, relaciones entre tablas y breve introducción al código SQL (Structured Quey Languague)
+          </p>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between font-mono text-xs text-slate-400">
+            <span>EMITIDO POR:</span>
+            <span class="text-white font-semibold">Udemy</span>
+          </div>
+          <a href="https://www.udemy.com/certificate/UC-cb7605c5-99d6-4f00-a8d4-94e887dbb685/" target="_blank" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-goldExotic/20 border border-goldExotic/40 text-goldExotic font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all duration-200">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            Ver Certificado
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- ======================================================== -->
+  <!-- 7. FOOTER HUD                                            -->
+  <!-- ======================================================== -->
+  <footer class="border-t border-slate-800 bg-black/90 py-8 relative z-10 text-slate-400 font-mono text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <!-- Left Branding & Protocol Info -->
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 bg-cyanGlow clip-diamond"></div>
+          <div>
+            <span class="text-white font-bold tracking-wider">DESARROLLADOR DE SOFTWARE</span>
+            <span class="text-slate-600 ml-2">| PROTOCOLO 2026.4</span>
+          </div>
+        </div>
+
+        <!-- Center Coordinates -->
+        <div class="text-slate-500 text-[11px]">
+          TERMINAL LOCATION: SECTOR-07 // LATENCY: 14MS // STATUS: ONLINE
+        </div>
+
+        <!-- Right Quick Jump to Top -->
+        <div>
+          <a href="#hero" onmouseenter="AudioEngine.play('hover')" onclick="AudioEngine.play('click')" class="hover:text-cyanGlow flex items-center gap-1.5 transition-colors">
+            <span>RETORNO A BASE</span>
+            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT CONTROLLERS                                   -->
+  <!-- ======================================================== -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mobile Menu Controls
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-icon-open');
+      const closeIcon = document.getElementById('menu-icon-close');
+      const isHidden = menu.classList.contains('hidden');
+
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        openIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        openIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    }
+
+    function closeMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-icon-open');
+      const closeIcon = document.getElementById('menu-icon-close');
+      menu.classList.add('hidden');
+      openIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    }
+
+    // Live UTC Clock Telemetry
+    function updateLiveClock() {
+      const clockEl = document.getElementById('live-utc-clock');
+      if (clockEl) {
+        const now = new Date();
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const mins = String(now.getUTCMinutes()).padStart(2, '0');
+        const secs = String(now.getUTCSeconds()).padStart(2, '0');
+        clockEl.innerText = `UTC ${hours}:${mins}:${secs}`;
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // Form Submission Simulation
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      AudioEngine.play('deploy');
+      const output = document.getElementById('form-terminal-output');
+      const form = document.getElementById('contact-form');
+      output.classList.remove('hidden');
+      form.reset();
+      setTimeout(() => {
+        output.classList.add('hidden');
+      }, 7000);
+    }
+
+    // Equipment Loadout Inventory Filter
+    function filterLoadout(category) {
+      AudioEngine.play('click');
+      const items = document.querySelectorAll('.loadout-item');
+      const buttons = document.querySelectorAll('.loadout-filter-btn');
+
+      // Update button active state
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-category') === category) {
+          btn.className = 'loadout-filter-btn px-4 py-2 bg-cyanGlow text-black border border-cyanGlow font-bold uppercase tracking-wider clip-tag shadow-cyan-glow transition-all cursor-pointer';
+        } else {
+          btn.className = 'loadout-filter-btn px-4 py-2 bg-panel text-slate-300 border border-slate-800 hover:border-cyanGlow font-bold uppercase tracking-wider clip-tag transition-all cursor-pointer';
+        }
+      });
+
+      // Filter grid items
+      items.forEach(item => {
+        const itemCat = item.getAttribute('data-category');
+        if (category === 'all' || itemCat === category) {
+          item.classList.remove('hidden');
+          item.classList.add('flex');
+        } else {
+          item.classList.add('hidden');
+          item.classList.remove('flex');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    // Mission Select Demo Launcher Modal Controller
+    function launchMissionDemo(name, diff, tech, desc) {
+      AudioEngine.play('deploy');
+      const modal = document.getElementById('mission-modal');
+      document.getElementById('modal-title').innerText = name;
+      document.getElementById('modal-diff').innerText = diff;
+      document.getElementById('modal-tech').innerText = tech;
+      document.getElementById('modal-desc').innerText = desc;
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeMissionModal() {
+      AudioEngine.play('click');
+      const modal = document.getElementById('mission-modal');
+      modal.classList.add('hidden');
+    }
+  </script>
+
+  <!-- Connect Custom Interactions Engine -->
+  <script src="script.js"></script>
+  <script type="module" src="canvas.js"></script>
+</body>
+</html>
